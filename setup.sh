@@ -194,6 +194,31 @@ setup_symlinks() {
     mkdir -p "$XDG_CONFIG_HOME/karabiner"
     link_file "$DOTFILES/config/karabiner/karabiner.json" "$XDG_CONFIG_HOME/karabiner/karabiner.json"
 
+    # -------------------------------------------------------------------------
+    # AI Development Tools
+    # -------------------------------------------------------------------------
+
+    # Claude Code
+    mkdir -p "$HOME/.claude/commands"
+    link_file "$DOTFILES/config/claude/settings.json" "$HOME/.claude/settings.json"
+    link_file "$DOTFILES/config/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+    for cmd in "$DOTFILES/config/claude/commands"/*.md; do
+        if [[ -f "$cmd" ]]; then
+            link_file "$cmd" "$HOME/.claude/commands/$(basename "$cmd")"
+        fi
+    done
+
+    # OpenAI Codex CLI
+    mkdir -p "$HOME/.codex"
+    link_file "$DOTFILES/config/codex/config.toml" "$HOME/.codex/config.toml"
+    link_file "$DOTFILES/config/codex/instructions.md" "$HOME/.codex/instructions.md"
+
+    # Cursor (symlink settings.json)
+    CURSOR_USER_DIR="$HOME/Library/Application Support/Cursor/User"
+    if [[ -d "$CURSOR_USER_DIR" ]]; then
+        link_file "$DOTFILES/config/cursor/settings.json" "$CURSOR_USER_DIR/settings.json"
+    fi
+
     # Custom scripts
     if [[ -d "$DOTFILES/bin" ]]; then
         for script in "$DOTFILES/bin"/*; do

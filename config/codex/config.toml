@@ -1,0 +1,185 @@
+# ==============================================================================
+# OpenAI Codex CLI Configuration
+# ==============================================================================
+# Location: ~/.codex/config.toml
+# Docs: https://developers.openai.com/codex/config-reference/
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Model Configuration
+# ------------------------------------------------------------------------------
+# Default model for code generation
+model = "gpt-5-codex"
+
+# Model provider (openai, azure, oss)
+model_provider = "openai"
+
+# Context window size (tokens)
+model_context_window = 128000
+
+# Auto-compact threshold (triggers history compaction)
+model_auto_compact_token_limit = 100000
+
+# Reasoning effort: minimal, low, medium, high, xhigh
+model_reasoning_effort = "medium"
+
+# Reasoning summary detail: auto, concise, detailed, none
+model_reasoning_summary = "auto"
+
+# Output verbosity: low, medium, high
+model_verbosity = "medium"
+
+# ------------------------------------------------------------------------------
+# Security & Sandbox
+# ------------------------------------------------------------------------------
+# Sandbox mode: read-only, workspace-write, danger-full-access
+sandbox_mode = "workspace-write"
+
+# Approval policy: untrusted, on-failure, on-request, never
+# - untrusted: Ask before any action
+# - on-failure: Only ask when commands fail
+# - on-request: Ask when model requests confirmation
+# - never: Never ask (dangerous, use in CI only)
+approval_policy = "on-request"
+
+# ------------------------------------------------------------------------------
+# Shell Environment
+# ------------------------------------------------------------------------------
+[shell_environment_policy]
+# Baseline environment: all, core, none
+inherit = "core"
+
+# Additional environment variables to include
+include = [
+  "HOME",
+  "USER",
+  "PATH",
+  "SHELL",
+  "EDITOR",
+  "TERM",
+  "LANG",
+  "LC_ALL",
+  "XDG_*",
+  "HOMEBREW_*",
+  "NODE_*",
+  "NPM_*",
+  "PYTHON*",
+  "VIRTUAL_ENV",
+  "CARGO_HOME",
+  "RUSTUP_HOME",
+  "GOPATH",
+  "MISE_*"
+]
+
+# Environment variables to exclude
+exclude = [
+  "OPENAI_API_KEY",
+  "ANTHROPIC_API_KEY",
+  "AWS_*",
+  "GITHUB_TOKEN",
+  "*_SECRET",
+  "*_PASSWORD",
+  "*_CREDENTIAL*"
+]
+
+# ------------------------------------------------------------------------------
+# Features
+# ------------------------------------------------------------------------------
+[features]
+# Shell tool (execute commands)
+shell_tool = true
+
+# Unified exec with PTY support (beta)
+unified_exec = true
+
+# Shell environment snapshot caching (beta)
+shell_snapshot = true
+
+# Allow model to request web searches
+web_search_request = true
+
+# ------------------------------------------------------------------------------
+# History
+# ------------------------------------------------------------------------------
+[history]
+# Persistence: save-all, none
+persistence = "save-all"
+
+# Maximum history file size (bytes)
+max_bytes = 104857600  # 100MB
+
+# ------------------------------------------------------------------------------
+# Tool Output
+# ------------------------------------------------------------------------------
+# Maximum tokens per tool output
+tool_output_token_limit = 16000
+
+# ------------------------------------------------------------------------------
+# TUI (Terminal User Interface)
+# ------------------------------------------------------------------------------
+[tui]
+# Enable animations
+animations = true
+
+# Enable notifications
+notifications = true
+
+# Scroll mode: auto, wheel, trackpad
+scroll_mode = "auto"
+
+# ------------------------------------------------------------------------------
+# MCP Servers (Model Context Protocol)
+# ------------------------------------------------------------------------------
+# Example: Filesystem server
+# [mcp_servers.filesystem]
+# command = "npx"
+# args = ["-y", "@anthropic-ai/mcp-server-filesystem", "/path/to/allowed/dir"]
+# enabled_tools = ["read_file", "write_file", "list_directory"]
+
+# Example: GitHub server
+# [mcp_servers.github]
+# command = "npx"
+# args = ["-y", "@anthropic-ai/mcp-server-github"]
+# env = { GITHUB_TOKEN = "${GITHUB_TOKEN}" }
+
+# Example: Database server
+# [mcp_servers.postgres]
+# command = "npx"
+# args = ["-y", "@anthropic-ai/mcp-server-postgres"]
+# env = { DATABASE_URL = "${DATABASE_URL}" }
+
+# ------------------------------------------------------------------------------
+# Profiles
+# ------------------------------------------------------------------------------
+# Development profile (more permissive)
+[profiles.dev]
+approval_policy = "on-failure"
+sandbox_mode = "workspace-write"
+model_reasoning_effort = "high"
+
+# CI profile (automated, dangerous)
+[profiles.ci]
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+model_verbosity = "low"
+
+# Review profile (read-only, thorough)
+[profiles.review]
+approval_policy = "on-request"
+sandbox_mode = "read-only"
+model_reasoning_effort = "xhigh"
+model_reasoning_summary = "detailed"
+
+# ------------------------------------------------------------------------------
+# Custom Instructions
+# ------------------------------------------------------------------------------
+[instructions]
+# System prompt additions
+system = """
+You are an expert software engineer assistant.
+- Write clean, maintainable code
+- Follow existing patterns in the codebase
+- Explain your reasoning for non-trivial changes
+- Ask clarifying questions when requirements are ambiguous
+- Test your changes before considering them complete
+"""

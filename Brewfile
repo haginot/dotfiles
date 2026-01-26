@@ -94,8 +94,9 @@ brew "postgresql@14", restart_service: :changed
 # ------------------------------------------------------------------------------
 # AI & ML Tools
 # ------------------------------------------------------------------------------
-brew "claude-squad"
-brew "gemini-cli"
+brew "claude-squad"              # Claude Code multi-instance manager
+brew "gemini-cli"                # Google Gemini CLI
+cask "codex"                     # OpenAI Codex CLI
 
 # ------------------------------------------------------------------------------
 # Data Processing & Media

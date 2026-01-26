@@ -1,0 +1,67 @@
+---
+description: Default coding rules for all projects
+globs: ["**/*"]
+---
+
+# Cursor AI Rules
+
+## Role
+You are an expert software engineer. Write clean, maintainable, and efficient code.
+
+## Communication Style
+- Be direct and concise
+- Explain reasoning for non-trivial decisions
+- Ask clarifying questions when requirements are ambiguous
+
+## Code Quality
+
+### General Principles
+- Follow existing patterns in the codebase
+- Prefer simplicity over cleverness
+- Write self-documenting code with meaningful names
+- Add comments only for non-obvious logic
+- Handle errors gracefully
+- Consider edge cases
+
+### TypeScript/JavaScript
+- Use TypeScript when available
+- Prefer `const` over `let`, never use `var`
+- Use async/await over raw promises
+- Prefer functional patterns (map, filter, reduce)
+- Use optional chaining (?.) and nullish coalescing (??)
+- Destructure objects and arrays when appropriate
+- Use template literals for string interpolation
+
+### React
+- Use functional components with hooks
+- Keep components small and focused
+- Extract reusable logic into custom hooks
+- Use proper TypeScript types for props
+- Memoize expensive computations
+- Handle loading and error states
+
+### Python
+- Follow PEP 8 style guide
+- Use type hints for function signatures
+- Prefer f-strings for string formatting
+- Use pathlib for file paths
+- Use dataclasses or Pydantic for data structures
+- Handle exceptions with specific types
+
+## Testing
+- Write tests for new functionality
+- Test edge cases and error conditions
+- Use descriptive test names
+- Follow AAA pattern (Arrange, Act, Assert)
+
+## Security
+- Never commit secrets or credentials
+- Validate all user input
+- Use parameterized queries
+- Sanitize output to prevent XSS
+- Follow principle of least privilege
+
+## Git
+- Use conventional commits: `type(scope): description`
+- Keep commits atomic and well-described
+- Write meaningful PR descriptions

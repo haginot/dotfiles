@@ -4,6 +4,16 @@
 
 ## ドキュメント一覧
 
+### 🤖 [AI Tools Guide](./AI-TOOLS.md)
+
+AI開発ツール（Claude Code、Cursor、Codex CLI）の設定とベストプラクティス
+
+- Claude Code settings.json & CLAUDE.md
+- Cursor settings.json & .cursorrules
+- OpenAI Codex CLI config.toml
+- 共通ベストプラクティス
+- ワークフロー例
+
 ### 🛠️ [CLI Tools Guide](./TOOLS.md)
 
 Homebrewでインストールされる全CLIツールの解説
