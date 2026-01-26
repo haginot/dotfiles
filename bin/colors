@@ -1,0 +1,31 @@
+#!/bin/bash
+# Display terminal color palette
+
+echo "Terminal Colors"
+echo ""
+
+# Basic colors
+for i in {0..7}; do
+    printf "\e[48;5;${i}m  %3s  \e[0m" "$i"
+done
+echo ""
+for i in {8..15}; do
+    printf "\e[48;5;${i}m  %3s  \e[0m" "$i"
+done
+echo ""
+echo ""
+
+# 216 colors
+for i in {16..231}; do
+    printf "\e[48;5;${i}m %3s \e[0m" "$i"
+    if (( (i - 15) % 18 == 0 )); then
+        echo ""
+    fi
+done
+echo ""
+
+# Grayscale
+for i in {232..255}; do
+    printf "\e[48;5;${i}m %3s \e[0m" "$i"
+done
+echo ""

@@ -1,0 +1,67 @@
+#!/bin/bash
+# System cleanup script
+
+set -e
+
+echo "🧹 Starting system cleanup..."
+echo ""
+
+# Homebrew
+if command -v brew &>/dev/null; then
+    echo "📦 Cleaning Homebrew..."
+    brew cleanup -s
+    brew autoremove
+    rm -rf "$(brew --cache)"
+fi
+
+# npm
+if command -v npm &>/dev/null; then
+    echo "📦 Cleaning npm cache..."
+    npm cache clean --force 2>/dev/null || true
+fi
+
+# yarn
+if command -v yarn &>/dev/null; then
+    echo "📦 Cleaning yarn cache..."
+    yarn cache clean 2>/dev/null || true
+fi
+
+# pip
+if command -v pip3 &>/dev/null; then
+    echo "🐍 Cleaning pip cache..."
+    pip3 cache purge 2>/dev/null || true
+fi
+
+# Docker
+if command -v docker &>/dev/null; then
+    echo "🐳 Cleaning Docker..."
+    docker system prune -f 2>/dev/null || true
+fi
+
+# macOS caches
+echo "🍎 Cleaning macOS caches..."
+rm -rf ~/Library/Caches/* 2>/dev/null || true
+rm -rf /private/var/folders/* 2>/dev/null || true
+
+# Xcode
+if [ -d ~/Library/Developer/Xcode ]; then
+    echo "🔨 Cleaning Xcode derived data..."
+    rm -rf ~/Library/Developer/Xcode/DerivedData/* 2>/dev/null || true
+    rm -rf ~/Library/Developer/Xcode/Archives/* 2>/dev/null || true
+fi
+
+# Trash (ask first)
+read -p "Empty Trash? (y/N) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    rm -rf ~/.Trash/* 2>/dev/null || true
+    echo "🗑️  Trash emptied"
+fi
+
+echo ""
+echo "✅ Cleanup complete!"
+
+# Show disk space
+echo ""
+echo "Disk usage:"
+df -h / | awk 'NR==2 {print "  " $3 " used / " $2 " total (" $5 " used)"}'

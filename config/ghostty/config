@@ -1,0 +1,102 @@
+# ==============================================================================
+# Ghostty Terminal Configuration
+# ==============================================================================
+# Docs: https://ghostty.org/docs/config
+# Reload: Cmd+Shift+,
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Font
+# ------------------------------------------------------------------------------
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+font-thicken = true
+
+# Font features
+font-feature = -calt
+font-feature = -liga
+
+# ------------------------------------------------------------------------------
+# Window
+# ------------------------------------------------------------------------------
+window-padding-x = 12
+window-padding-y = 12
+window-padding-balance = true
+window-theme = auto
+window-decoration = true
+
+# macOS specific
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+
+# ------------------------------------------------------------------------------
+# Theme
+# ------------------------------------------------------------------------------
+theme = catppuccin-mocha
+
+# Cursor
+cursor-style = block
+cursor-style-blink = false
+cursor-color = #f5e0dc
+
+# Selection
+selection-foreground = #1e1e2e
+selection-background = #f5e0dc
+
+# ------------------------------------------------------------------------------
+# Behavior
+# ------------------------------------------------------------------------------
+confirm-close-surface = false
+copy-on-select = clipboard
+mouse-hide-while-typing = true
+
+# Scrollback
+scrollback-limit = 10000
+
+# Shell integration
+shell-integration = zsh
+shell-integration-features = cursor,title
+
+# ------------------------------------------------------------------------------
+# Keybindings
+# ------------------------------------------------------------------------------
+# Shift+Enter for tmux/vim compatibility
+keybind = shift+enter=text:\x1b\r
+
+# Quick tab switching
+keybind = cmd+1=goto_tab:1
+keybind = cmd+2=goto_tab:2
+keybind = cmd+3=goto_tab:3
+keybind = cmd+4=goto_tab:4
+keybind = cmd+5=goto_tab:5
+keybind = cmd+6=goto_tab:6
+keybind = cmd+7=goto_tab:7
+keybind = cmd+8=goto_tab:8
+keybind = cmd+9=goto_tab:9
+
+# Split panes
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+
+# Navigate splits
+keybind = cmd+alt+left=goto_split:left
+keybind = cmd+alt+right=goto_split:right
+keybind = cmd+alt+up=goto_split:top
+keybind = cmd+alt+down=goto_split:bottom
+
+# Font size
+keybind = cmd+plus=increase_font_size:1
+keybind = cmd+minus=decrease_font_size:1
+keybind = cmd+0=reset_font_size
+
+# Clear screen
+keybind = cmd+k=clear_screen
+
+# ------------------------------------------------------------------------------
+# Performance
+# ------------------------------------------------------------------------------
+# Use Metal renderer on macOS
+# renderer = metal
+
+# GPU acceleration
+# gpu-acceleration = true

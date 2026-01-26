@@ -1,0 +1,201 @@
+# ==============================================================================
+# .zshrc - Main Zsh Configuration
+# ==============================================================================
+# Load order: zshenv -> zprofile -> zshrc -> zlogin
+# ==============================================================================
+
+# Profiling (uncomment to debug slow startup)
+# zmodload zsh/zprof
+
+# ------------------------------------------------------------------------------
+# Instant Prompt (must be at top)
+# ------------------------------------------------------------------------------
+# Enable Powerlevel10k instant prompt if using p10k
+# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+# fi
+
+# ------------------------------------------------------------------------------
+# Source Configuration Files
+# ------------------------------------------------------------------------------
+source_if_exists() {
+    [[ -f "$1" ]] && source "$1"
+}
+
+# Load custom configurations
+source_if_exists "$DOTFILES/shell/path.zsh"
+source_if_exists "$DOTFILES/shell/aliases.zsh"
+source_if_exists "$DOTFILES/shell/functions.zsh"
+
+# Load local overrides (not tracked in git)
+source_if_exists "$HOME/.zshrc.local"
+
+# ------------------------------------------------------------------------------
+# History Configuration
+# ------------------------------------------------------------------------------
+HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+HISTSIZE=50000
+SAVEHIST=50000
+
+# Create history directory if needed
+[[ -d "${HISTFILE:h}" ]] || mkdir -p "${HISTFILE:h}"
+
+# History options
+setopt EXTENDED_HISTORY          # Write timestamp to history
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first
+setopt HIST_IGNORE_DUPS          # Don't record duplicates
+setopt HIST_IGNORE_ALL_DUPS      # Delete old duplicate
+setopt HIST_IGNORE_SPACE         # Don't record entries starting with space
+setopt HIST_FIND_NO_DUPS         # Don't display duplicates in search
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks
+setopt HIST_VERIFY               # Show command before executing from history
+setopt SHARE_HISTORY             # Share history between sessions
+setopt INC_APPEND_HISTORY        # Add commands immediately
+
+# ------------------------------------------------------------------------------
+# Zsh Options
+# ------------------------------------------------------------------------------
+setopt AUTO_CD                   # cd by typing directory name
+setopt AUTO_PUSHD                # Make cd push old dir onto stack
+setopt PUSHD_IGNORE_DUPS         # Don't push duplicates
+setopt PUSHD_SILENT              # Don't print stack after pushd/popd
+setopt CORRECT                   # Command auto-correction
+setopt INTERACTIVE_COMMENTS      # Allow comments in interactive shell
+setopt NO_BEEP                   # Silence beeps
+setopt EXTENDED_GLOB             # Extended globbing
+setopt NULL_GLOB                 # No error on glob with no matches
+setopt COMPLETE_IN_WORD          # Complete from cursor position
+setopt ALWAYS_TO_END             # Move cursor to end after completion
+
+# ------------------------------------------------------------------------------
+# Completion System
+# ------------------------------------------------------------------------------
+autoload -Uz compinit
+
+# Only regenerate completion cache once a day
+if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
+
+# Completion options
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'  # Case insensitive
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"    # Color completions
+zstyle ':completion:*' accept-exact '*(N)'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
+
+# Completion descriptions
+zstyle ':completion:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:warnings' format '%F{red}-- no matches --%f'
+zstyle ':completion:*:messages' format '%F{purple}-- %d --%f'
+
+# Group completions
+zstyle ':completion:*' group-name ''
+
+# Homebrew completions
+if type brew &>/dev/null; then
+    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+    FPATH="$(brew --prefix)/share/zsh-completions:${FPATH}"
+fi
+
+# ------------------------------------------------------------------------------
+# Key Bindings
+# ------------------------------------------------------------------------------
+bindkey -e                       # Emacs key bindings
+
+# Better history search
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+bindkey '^P' history-search-backward
+bindkey '^N' history-search-forward
+
+# Word navigation (Option+Arrow on macOS)
+bindkey '^[[1;3C' forward-word   # Option+Right
+bindkey '^[[1;3D' backward-word  # Option+Left
+
+# Delete word
+bindkey '^[[3;3~' kill-word      # Option+Delete
+
+# Beginning/end of line
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+
+# ------------------------------------------------------------------------------
+# Plugins (Homebrew-managed)
+# ------------------------------------------------------------------------------
+# Zsh Autosuggestions
+source_if_exists "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"
+
+# Zsh Syntax Highlighting (must be last plugin)
+source_if_exists "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+# ------------------------------------------------------------------------------
+# Tool Integrations
+# ------------------------------------------------------------------------------
+
+# mise (runtime manager - replaces pyenv, nodenv, etc.)
+if command -v mise &>/dev/null; then
+    eval "$(mise activate zsh)"
+fi
+
+# direnv (directory-specific environment)
+if command -v direnv &>/dev/null; then
+    eval "$(direnv hook zsh)"
+fi
+
+# fzf
+if command -v fzf &>/dev/null; then
+    source_if_exists "$(brew --prefix)/opt/fzf/shell/completion.zsh"
+    source_if_exists "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+
+    # fzf options
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+    export FZF_DEFAULT_OPTS="
+        --height 60%
+        --layout=reverse
+        --border
+        --info=inline
+        --preview '([[ -f {} ]] && bat --style=numbers --color=always {} || tree -C {}) 2>/dev/null | head -200'
+        --preview-window=right:50%:hidden
+        --bind='?:toggle-preview'
+        --bind='ctrl-u:preview-page-up'
+        --bind='ctrl-d:preview-page-down'
+        --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8
+        --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+        --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
+    "
+fi
+
+# zoxide (smart cd)
+if command -v zoxide &>/dev/null; then
+    eval "$(zoxide init zsh)"
+fi
+
+# Starship prompt
+if command -v starship &>/dev/null; then
+    eval "$(starship init zsh)"
+fi
+
+# brew-wrap for automatic Brewfile management
+source_if_exists "$(brew --prefix)/etc/brew-wrap"
+
+# ------------------------------------------------------------------------------
+# Final Setup
+# ------------------------------------------------------------------------------
+
+# Create necessary directories
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "${XDG_DATA_HOME:-$HOME/.local/share}"
+mkdir -p "${XDG_STATE_HOME:-$HOME/.local/state}"
+mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}"
+
+# Profiling end (uncomment to debug slow startup)
+# zprof

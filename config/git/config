@@ -1,0 +1,199 @@
+# ==============================================================================
+# Git Configuration
+# ==============================================================================
+
+[user]
+    email = hagino@apache.org
+    name = haginot
+    # signingkey = YOUR_GPG_KEY_ID
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = cursor --wait
+    autocrlf = input
+    ignorecase = false
+    pager = delta
+    excludesfile = ~/.config/git/ignore
+    attributesfile = ~/.config/git/attributes
+    # Faster operations
+    preloadindex = true
+    fscache = true
+
+[pull]
+    rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true
+    followTags = true
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[rebase]
+    autoStash = true
+    autoSquash = true
+
+[merge]
+    conflictstyle = zdiff3
+    tool = cursor
+
+[diff]
+    colorMoved = default
+    algorithm = histogram
+    tool = cursor
+
+[difftool "cursor"]
+    cmd = cursor --wait --diff $LOCAL $REMOTE
+
+[mergetool "cursor"]
+    cmd = cursor --wait $MERGED
+
+# ------------------------------------------------------------------------------
+# Delta (better diff)
+# ------------------------------------------------------------------------------
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = false
+    syntax-theme = Catppuccin-mocha
+
+[interactive]
+    diffFilter = delta --color-only
+
+# ------------------------------------------------------------------------------
+# Aliases
+# ------------------------------------------------------------------------------
+[alias]
+    # Status
+    st = status -sb
+    s = status -sb
+
+    # Branching
+    co = checkout
+    cob = checkout -b
+    br = branch
+    bra = branch -a
+    brd = branch -d
+    brD = branch -D
+
+    # Commits
+    ci = commit
+    cm = commit -m
+    ca = commit --amend
+    can = commit --amend --no-edit
+    caa = commit -a --amend
+
+    # Diff
+    df = diff
+    dfs = diff --staged
+    dfc = diff --cached
+
+    # Log
+    lg = log --oneline -20
+    lgg = log --graph --oneline --decorate
+    lgp = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    last = log -1 HEAD --stat
+    today = log --since=midnight --oneline --no-merges
+
+    # Stash
+    sl = stash list
+    ss = stash save
+    sp = stash pop
+    sa = stash apply
+    sd = stash drop
+
+    # Reset
+    unstage = reset HEAD --
+    uncommit = reset --soft HEAD~1
+    discard = checkout --
+
+    # Remote
+    f = fetch
+    fa = fetch --all --prune
+    pl = pull
+    plr = pull --rebase
+    ps = push
+    psf = push --force-with-lease
+
+    # Utilities
+    aliases = config --get-regexp alias
+    contributors = shortlog --summary --numbered
+    whoami = config user.email
+    root = rev-parse --show-toplevel
+    ignore = "!gi() { curl -sL https://www.toptal.com/developers/gitignore/api/$@ ;}; gi"
+
+    # Clean up merged branches
+    cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+
+    # WIP commit
+    wip = "!git add -A && git commit -m 'WIP [skip ci]'"
+    unwip = reset HEAD~1
+
+# ------------------------------------------------------------------------------
+# URL Shortcuts
+# ------------------------------------------------------------------------------
+[url "git@github.com:"]
+    insteadOf = "gh:"
+    pushInsteadOf = "github:"
+    pushInsteadOf = "git://github.com/"
+
+[url "git@gist.github.com:"]
+    insteadOf = "gist:"
+
+[url "git@gitlab.com:"]
+    insteadOf = "gl:"
+
+# ------------------------------------------------------------------------------
+# GitHub CLI
+# ------------------------------------------------------------------------------
+[credential "https://github.com"]
+    helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+    helper = !gh auth git-credential
+
+# ------------------------------------------------------------------------------
+# LFS
+# ------------------------------------------------------------------------------
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+# ------------------------------------------------------------------------------
+# Color
+# ------------------------------------------------------------------------------
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+# ------------------------------------------------------------------------------
+# Commit Signing (uncomment to enable)
+# ------------------------------------------------------------------------------
+# [commit]
+#     gpgsign = true
+# [gpg]
+#     program = gpg

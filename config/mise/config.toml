@@ -1,0 +1,59 @@
+# ==============================================================================
+# mise Configuration
+# ==============================================================================
+# Docs: https://mise.jdx.dev/
+# mise replaces pyenv, nodenv, asdf, etc.
+# ==============================================================================
+
+[settings]
+# Automatically trust .mise.toml files
+trusted_config_paths = ["~/dev"]
+
+# Legacy version file support
+legacy_version_file = true
+legacy_version_file_disable_tools = []
+
+# Auto-install missing tools
+auto_install = true
+
+# Verbose mode
+verbose = false
+
+# Experimental features
+experimental = false
+
+# Status options
+status = { missing_tools = "warn", show_env = false }
+
+# ------------------------------------------------------------------------------
+# Default Tool Versions
+# ------------------------------------------------------------------------------
+[tools]
+python = "3.12"
+node = "lts"
+# go = "latest"
+# rust = "stable"
+# java = "temurin-21"
+# ruby = "3.3"
+
+# ------------------------------------------------------------------------------
+# Environment Variables
+# ------------------------------------------------------------------------------
+[env]
+# Global environment variables managed by mise
+# PROJECT_ENV = "development"
+
+# ------------------------------------------------------------------------------
+# Tasks
+# ------------------------------------------------------------------------------
+[tasks.lint]
+description = "Run linters"
+run = "echo 'Running linters...'"
+
+[tasks.test]
+description = "Run tests"
+run = "echo 'Running tests...'"
+
+[tasks.format]
+description = "Format code"
+run = "echo 'Formatting code...'"

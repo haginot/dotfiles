@@ -1,0 +1,3 @@
+#!/bin/bash
+# Display weather information
+curl -s "wttr.in/${1:-Tokyo}?format=v2"

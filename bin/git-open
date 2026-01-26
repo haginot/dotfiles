@@ -1,0 +1,41 @@
+#!/bin/bash
+# Open the current git repository in browser
+
+# Get remote URL
+url=$(git config --get remote.origin.url 2>/dev/null)
+
+if [[ -z "$url" ]]; then
+    echo "Not a git repository or no remote origin"
+    exit 1
+fi
+
+# Convert SSH URL to HTTPS
+url=$(echo "$url" | sed -e 's/git@github.com:/https:\/\/github.com\//' \
+                        -e 's/git@gitlab.com:/https:\/\/gitlab.com\//' \
+                        -e 's/git@bitbucket.org:/https:\/\/bitbucket.org\//' \
+                        -e 's/\.git$//')
+
+# Get current branch
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+# Handle arguments
+case "$1" in
+    pr|pulls)
+        url="$url/pulls"
+        ;;
+    issues)
+        url="$url/issues"
+        ;;
+    actions)
+        url="$url/actions"
+        ;;
+    branch)
+        url="$url/tree/$branch"
+        ;;
+    *)
+        # Default: open repo root
+        ;;
+esac
+
+echo "Opening: $url"
+open "$url"

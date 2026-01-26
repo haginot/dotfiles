@@ -1,0 +1,45 @@
+#!/bin/bash
+# Display system information
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  System Information"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# User & Host
+echo "User:      $(whoami)"
+echo "Hostname:  $(hostname)"
+echo ""
+
+# OS
+echo "OS:        $(sw_vers -productName) $(sw_vers -productVersion)"
+echo "Build:     $(sw_vers -buildVersion)"
+echo "Kernel:    $(uname -r)"
+echo ""
+
+# Hardware
+echo "Model:     $(sysctl -n hw.model)"
+echo "Chip:      $(sysctl -n machdep.cpu.brand_string 2>/dev/null || echo "Apple Silicon")"
+echo "Cores:     $(sysctl -n hw.ncpu)"
+echo "Memory:    $(( $(sysctl -n hw.memsize) / 1024 / 1024 / 1024 )) GB"
+echo ""
+
+# Disk
+echo "Disk:      $(df -h / | awk 'NR==2 {print $3 " used / " $2 " (" $5 " used)"}')"
+echo ""
+
+# Network
+echo "Local IP:  $(ipconfig getifaddr en0 2>/dev/null || echo "N/A")"
+echo "Public IP: $(curl -s ifconfig.me 2>/dev/null || echo "N/A")"
+echo ""
+
+# Uptime
+echo "Uptime:    $(uptime | sed 's/.*up //' | sed 's/,.*//')"
+echo ""
+
+# Shell & Tools
+echo "Shell:     $SHELL ($(zsh --version 2>/dev/null | head -1 || echo "N/A"))"
+echo "Homebrew:  $(brew --version 2>/dev/null | head -1 || echo "Not installed")"
+echo "Git:       $(git --version 2>/dev/null || echo "Not installed")"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
