@@ -23,7 +23,9 @@ verbose = false
 experimental = false
 
 # Status options
-status = { missing_tools = "warn", show_env = false }
+[settings.status]
+missing_tools = "always"
+show_env = false
 
 # ------------------------------------------------------------------------------
 # Default Tool Versions

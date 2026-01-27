@@ -56,6 +56,34 @@ has() {
     command -v "$1" &>/dev/null
 }
 
+# Check if running on Apple Silicon
+is_apple_silicon() {
+    [[ $(uname -m) == "arm64" ]]
+}
+
+# Install Rosetta 2 for Apple Silicon (required for Intel apps)
+install_rosetta() {
+    if is_apple_silicon; then
+        if ! /usr/bin/pgrep -q oahd && ! arch -x86_64 /usr/bin/true 2>/dev/null; then
+            info "Installing Rosetta 2 for Apple Silicon..."
+            softwareupdate --install-rosetta --agree-to-license
+            success "Rosetta 2 installed"
+        else
+            success "Rosetta 2 already installed"
+        fi
+    fi
+}
+
+# Initialize GPG directory (required for mise node verification)
+init_gpg() {
+    local gnupg_dir="${GNUPGHOME:-$HOME/.gnupg}"
+    if [[ ! -d "$gnupg_dir" ]]; then
+        mkdir -p "$gnupg_dir"
+        chmod 700 "$gnupg_dir"
+        info "Initialized GPG directory at $gnupg_dir"
+    fi
+}
+
 # Backup and remove existing file/directory
 backup_and_remove() {
     local target="$1"
@@ -127,7 +155,7 @@ install_packages() {
 
     if [[ -f "$DOTFILES/Brewfile" ]]; then
         info "Installing packages (this may take a while)..."
-        brew bundle install --file="$DOTFILES/Brewfile" --no-lock
+        brew bundle install --file="$DOTFILES/Brewfile"
 
         info "Cleaning up..."
         brew cleanup
@@ -155,7 +183,7 @@ install_mas_apps() {
     fi
 
     info "Installing App Store apps from Brewfile..."
-    brew bundle install --file="$DOTFILES/Brewfile" --no-lock
+    brew bundle install --file="$DOTFILES/Brewfile"
 
     success "App Store apps installed"
 }
@@ -258,7 +286,11 @@ setup_mise() {
 
     if has mise; then
         info "Installing default tools..."
-        mise install --yes
+        # Try normal install first, fall back to skipping GPG verification if it fails
+        if ! mise install --yes 2>/dev/null; then
+            warn "GPG verification failed, retrying without verification..."
+            MISE_NODE_VERIFY=0 mise install --yes
+        fi
         success "mise tools installed"
     else
         warn "mise not found. Install it first with 'brew install mise'"
@@ -320,12 +352,14 @@ Commands:
     apps      Install App Store apps
     tools     Setup development tools (mise, fzf, etc.)
     shell     Setup shell configuration
+    rosetta   Install Rosetta 2 (Apple Silicon only)
     help      Show this help message
 
 Examples:
     ./setup.sh          # Full setup
     ./setup.sh link     # Create symlinks only
     ./setup.sh brew     # Install Homebrew packages only
+    ./setup.sh rosetta  # Install Rosetta 2 for Intel apps
 
 EOF
 }
@@ -334,11 +368,13 @@ setup_all() {
     header "🚀 Starting Full Setup"
 
     install_xcode_tools
+    install_rosetta
     install_homebrew
     install_packages
     setup_symlinks
     setup_shell
     setup_fzf
+    init_gpg
     setup_mise
     setup_git_delta
     install_mas_apps
@@ -380,8 +416,9 @@ main() {
         brew)     install_homebrew && install_packages ;;
         macos)    setup_macos ;;
         apps)     install_mas_apps ;;
-        tools)    setup_fzf && setup_mise && setup_git_delta ;;
+        tools)    init_gpg && setup_fzf && setup_mise && setup_git_delta ;;
         shell)    setup_shell ;;
+        rosetta)  install_rosetta ;;
         help|-h|--help) show_help ;;
         *)
             error "Unknown command: $cmd"

@@ -69,15 +69,6 @@
     "VISUAL": "cursor --wait",
     "PAGER": "less"
   },
-  "preferences": {
-    "autoCompact": true,
-    "autoUpdaterStatus": "disabled",
-    "theme": "dark",
-    "verbose": false
-  },
-  "model": {
-    "default": "claude-sonnet-4-20250514",
-    "large": "claude-opus-4-20250514",
-    "fast": "claude-haiku-3-5-20241022"
-  }
+  "model": "claude-sonnet-4-20250514",
+  "autoUpdatesChannel": "stable"
 }
