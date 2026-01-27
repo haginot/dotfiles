@@ -175,15 +175,11 @@ install_mas_apps() {
         return 1
     fi
 
-    # Check if signed in
-    if ! mas account &>/dev/null; then
-        warn "Not signed into Mac App Store."
-        warn "Please sign in manually and re-run this script."
-        return 0
-    fi
+    # Note: mas v5.x removed 'mas account' command
+    # Installation will fail gracefully if not signed in
 
     info "Installing App Store apps from Brewfile..."
-    brew bundle install --file="$DOTFILES/Brewfile"
+    brew bundle install --file="$DOTFILES/Brewfile" --mas
 
     success "App Store apps installed"
 }

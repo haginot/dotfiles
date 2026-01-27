@@ -182,12 +182,14 @@ cask "keyboardcleantool"     # Keyboard cleaner
 cask "rectangle"             # Window manager (free)
 cask "1password"             # Password manager
 cask "notion"                # Notes & docs
+cask "notion-calendar"       # Calendar app
 cask "obsidian"              # Markdown notes
 
 # ------------------------------------------------------------------------------
 # Communication
 # ------------------------------------------------------------------------------
 cask "discord"
+cask "microsoft-teams"       # Microsoft Teams
 cask "zoom"
 
 # ------------------------------------------------------------------------------
@@ -269,6 +271,9 @@ mas "Amphetamine", id: 937984704
 mas "Magnet", id: 441258766
 mas "Hidden Bar", id: 1452453066
 mas "RunCat", id: 1429033973
+
+# Manual Install Required:
+# - Genspark Browser: https://www.genspark.ai/browser (AI agentic browser)
 
 # ==============================================================================
 # VS Code Extensions
