@@ -173,10 +173,10 @@ alias o='open'
 alias oo='open .'
 alias finder='open -a Finder'
 alias chrome='open -a "Google Chrome"'
-alias cursor='open -a Cursor'
-# Note: 'code' command is provided by brew-wrap for VS Code extension management
-# Use 'vscode' alias if you just want to open VS Code
+# Note: 'code' and 'cursor' commands are wrapped by brew-wrap for extension management
+# Use these aliases if you just want to open the apps without brew-wrap integration
 alias vscode='open -a "Visual Studio Code"'
+alias cur='open -a Cursor'
 
 # Clipboard
 alias pbp='pbpaste'
