@@ -165,3 +165,5 @@ terraform.rc
 *.cache
 .cache/
 *.orig
+
+**/.claude/settings.local.json

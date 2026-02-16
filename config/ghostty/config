@@ -32,7 +32,7 @@ macos-option-as-alt = true
 # ------------------------------------------------------------------------------
 # Theme
 # ------------------------------------------------------------------------------
-theme = catppuccin-mocha
+theme = "Catppuccin Mocha"
 
 # Cursor
 cursor-style = block
