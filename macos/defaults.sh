@@ -107,6 +107,17 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightC
 # ==============================================================================
 echo "⌨️  Configuring Keyboard..."
 
+# Remap Caps Lock to Control
+# Key codes: 0x700000039 = Caps Lock, 0x7000000E0 = Left Control
+hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}' > /dev/null
+
+# Install LaunchAgent for persistent key remapping across reboots
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+mkdir -p ~/Library/LaunchAgents
+cp "${SCRIPT_DIR}/LaunchAgents/com.local.KeyRemapping.plist" ~/Library/LaunchAgents/
+launchctl unload ~/Library/LaunchAgents/com.local.KeyRemapping.plist 2>/dev/null || true
+launchctl load ~/Library/LaunchAgents/com.local.KeyRemapping.plist
+
 # Enable full keyboard access for all controls
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
@@ -119,6 +130,57 @@ defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
 
 # Use function keys as standard function keys
 defaults write NSGlobalDomain com.apple.keyboard.fnState -bool true
+
+# Configure same-app window switching shortcuts (Cmd+` and Cmd+Shift+`)
+echo "🪟  Configuring same-app window shortcuts..."
+python3 <<'PY'
+import os
+import plistlib
+from pathlib import Path
+
+plist_path = Path(os.path.expanduser("~/Library/Preferences/com.apple.symbolichotkeys.plist"))
+if plist_path.exists():
+    with plist_path.open("rb") as plist_file:
+        data = plistlib.load(plist_file)
+else:
+    data = {}
+
+symbolic_hotkeys = data.setdefault("AppleSymbolicHotKeys", {})
+
+# Move focus to next window (Command + backtick)
+symbolic_hotkeys["27"] = {
+    "enabled": True,
+    "value": {
+        "type": "standard",
+        "parameters": [64, 33, 1048576],
+    },
+}
+
+# Move focus to previous window (Command + Shift + backtick)
+symbolic_hotkeys["51"] = {
+    "enabled": True,
+    "value": {
+        "type": "standard",
+        "parameters": [64, 33, 1572864],
+    },
+}
+
+plist_path.parent.mkdir(parents=True, exist_ok=True)
+with plist_path.open("wb") as plist_file:
+    plistlib.dump(data, plist_file)
+PY
+
+# ==============================================================================
+# Input Sources & IME
+# ==============================================================================
+echo "🈶  Configuring Input Sources..."
+
+chmod +x "${SCRIPT_DIR}/scripts/enforce_input_sources.sh"
+"${SCRIPT_DIR}/scripts/enforce_input_sources.sh"
+
+cp "${SCRIPT_DIR}/LaunchAgents/com.local.InputSourceEnforcer.plist" ~/Library/LaunchAgents/
+launchctl unload ~/Library/LaunchAgents/com.local.InputSourceEnforcer.plist 2>/dev/null || true
+launchctl load ~/Library/LaunchAgents/com.local.InputSourceEnforcer.plist
 
 # ==============================================================================
 # Dock
@@ -182,20 +244,20 @@ defaults write com.apple.dock mru-spaces -bool false
 # 12: Notification Center
 # 13: Lock Screen
 
-# Top left → Mission Control
-defaults write com.apple.dock wvous-tl-corner -int 2
+# Top left → Mission Control (disabled)
+defaults write com.apple.dock wvous-tl-corner -int 0
 defaults write com.apple.dock wvous-tl-modifier -int 0
 
-# Top right → Notification Center
-defaults write com.apple.dock wvous-tr-corner -int 12
+# Top right → Notification Center (disabled)
+defaults write com.apple.dock wvous-tr-corner -int 0
 defaults write com.apple.dock wvous-tr-modifier -int 0
 
-# Bottom left → Desktop
-defaults write com.apple.dock wvous-bl-corner -int 4
+# Bottom left → Desktop (disabled)
+defaults write com.apple.dock wvous-bl-corner -int 0
 defaults write com.apple.dock wvous-bl-modifier -int 0
 
-# Bottom right → Lock Screen
-defaults write com.apple.dock wvous-br-corner -int 13
+# Bottom right → Lock Screen (disabled)
+defaults write com.apple.dock wvous-br-corner -int 0
 defaults write com.apple.dock wvous-br-modifier -int 0
 
 # ==============================================================================
