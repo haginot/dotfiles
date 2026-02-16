@@ -199,3 +199,4 @@ mkdir -p "${XDG_CACHE_HOME:-$HOME/.cache}"
 
 # Profiling end (uncomment to debug slow startup)
 # zprof
+export PATH="$HOME/.local/bin:$PATH"

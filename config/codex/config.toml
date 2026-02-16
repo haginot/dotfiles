@@ -9,7 +9,7 @@
 # Model Configuration
 # ------------------------------------------------------------------------------
 # Default model for code generation
-model = "gpt-5-codex"
+model = "gpt-5.3-codex"
 
 # Model provider (openai, azure, oss)
 model_provider = "openai"
@@ -85,6 +85,8 @@ exclude = [
 # ------------------------------------------------------------------------------
 # Features
 # ------------------------------------------------------------------------------
+web_search = "live"
+
 [features]
 # Shell tool (execute commands)
 shell_tool = true
@@ -95,8 +97,6 @@ unified_exec = true
 # Shell environment snapshot caching (beta)
 shell_snapshot = true
 
-# Allow model to request web searches
-web_search_request = true
 
 # ------------------------------------------------------------------------------
 # History
@@ -173,9 +173,8 @@ model_reasoning_summary = "detailed"
 # ------------------------------------------------------------------------------
 # Custom Instructions
 # ------------------------------------------------------------------------------
-[instructions]
-# System prompt additions
-system = """
+# Custom system prompt
+instructions = """
 You are an expert software engineer assistant.
 - Write clean, maintainable code
 - Follow existing patterns in the codebase
