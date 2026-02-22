@@ -160,6 +160,7 @@ cask "cursor"                # AI-powered editor
 cask "visual-studio-code"
 cask "macvim-app"
 cask "docker-desktop"
+cask "github"                    # GitHub Desktop
 cask "ghostty"               # Modern terminal
 cask "warp"                  # AI terminal (alternative)
 cask "orbstack"              # Fast Docker/Linux (alternative to Docker Desktop)
@@ -205,6 +206,7 @@ cask "arc"                   # Modern browser
 cask "vlc"                   # Video player
 cask "spotify"               # Music
 cask "handbrake"             # Video converter
+cask "screen-studio"         # Professional screen recorder
 
 # ------------------------------------------------------------------------------
 # Documents & Office

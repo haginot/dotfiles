@@ -255,6 +255,10 @@ mise upgrade              # Runtime versions
 mas upgrade               # App Store apps
 ```
 
+## 📏 Repository Rule
+
+Any new macOS configuration change or app/package installation/uninstallation must be reflected in this dotfiles repository.
+
 ## 🆘 Troubleshooting
 
 ### Check Health

@@ -267,6 +267,26 @@ model_reasoning_effort = "xhigh"
 
 使用: `codex --profile dev`
 
+### カスタムスラッシュコマンド
+
+Codex CLIは `~/.codex/prompts/*.md` を `/コマンド名` として読み込みます。
+
+例:
+- `~/.codex/prompts/commit.md` → `/commit`
+- `~/.codex/prompts/review.md` → `/review`
+- `~/.codex/prompts/pr.md` → `/pr`
+
+各ファイルは先頭にYAML frontmatterを持たせます。
+
+```markdown
+---
+description: Short command description
+---
+
+Prompt body...
+Use $ARGUMENTS for user-supplied arguments.
+```
+
 ### MCP統合
 
 ```toml
@@ -282,9 +302,48 @@ env = { GITHUB_TOKEN = "${GITHUB_TOKEN}" }
 2. **レビュー時**: `--profile review` で慎重に
 3. **CI時のみ**: `--dangerously-bypass-approvals-and-sandbox`
 
+### Codexへの指示テンプレート（推奨）
+
+公式ガイドに合わせ、以下の順で依頼すると精度が安定します。
+
+1. **Goal**: 目的を1文で明示
+2. **Scope**: 変更対象ファイルと対象外を明示
+3. **Constraints**: 安全性・互換性・スタイル制約を明示
+4. **Acceptance Criteria**: 完了条件をテスト可能な形で列挙
+5. **Validation**: 実行してほしい検証コマンドを指定
+
+依頼例:
+
+```text
+Goal:
+- Brewfileに新しいCLIツールを追加し、セットアップフローに反映する。
+
+Scope:
+- Brewfile
+- docs/TOOLS.md
+- setup.sh（必要なら）
+
+Constraints:
+- 既存のカテゴリ順を維持
+- 既存環境を壊さない（idempotent）
+
+Acceptance Criteria:
+- `brew bundle check` が通る
+- 追加したツールが docs/TOOLS.md に用途付きで記載される
+
+Validation:
+- make doctor
+```
+
+補足:
+- 大きな要求は1時間程度で終わる単位に分割すると成功率が上がる。
+- 継続的に守るルールはリポジトリ直下の `AGENTS.md` に記述して永続化する。
+
 **参考リンク:**
 - [Codex CLI Documentation](https://developers.openai.com/codex/cli/)
 - [Configuration Reference](https://developers.openai.com/codex/config-reference/)
+- [Codex Prompting Guide](https://developers.openai.com/cookbook/examples/gpt-5/codex_prompting_guide)
+- [Using AGENTS.md](https://developers.openai.com/codex/guides/agents-md)
 
 ---
 
@@ -393,7 +452,12 @@ dotfiles/
     │   ├── settings.json
     │   └── rules/
     └── codex/
-        └── config.toml
+        ├── config.toml
+        ├── instructions.md
+        └── prompts/
+            ├── commit.md
+            ├── review.md
+            └── pr.md
 ```
 
 シンボリックリンク:

@@ -233,9 +233,14 @@ setup_symlinks() {
     done
 
     # OpenAI Codex CLI
-    mkdir -p "$HOME/.codex"
+    mkdir -p "$HOME/.codex/prompts"
     link_file "$DOTFILES/config/codex/config.toml" "$HOME/.codex/config.toml"
     link_file "$DOTFILES/config/codex/instructions.md" "$HOME/.codex/instructions.md"
+    for prompt in "$DOTFILES/config/codex/prompts"/*.md; do
+        if [[ -f "$prompt" ]]; then
+            link_file "$prompt" "$HOME/.codex/prompts/$(basename "$prompt")"
+        fi
+    done
 
     # Cursor (symlink settings.json)
     CURSOR_USER_DIR="$HOME/Library/Application Support/Cursor/User"

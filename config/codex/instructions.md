@@ -18,6 +18,14 @@
 3. Make incremental changes
 4. Test after each significant change
 5. Verify the solution works as expected
+6. If you change macOS settings or install/uninstall apps/packages, reflect those changes in this dotfiles repository in the same task
+7. Prefer issue-sized scope with explicit goal, constraints, acceptance criteria, and validation commands
+
+## Task Input Quality
+- Ask for or infer a clear goal, in-scope files, and out-of-scope boundaries
+- Confirm concrete acceptance criteria before broad refactors
+- Prefer explicit file paths and exact commands over abstract requests
+- For long tasks, report progress and verification results incrementally
 
 ## Security
 - Never commit secrets or API keys
