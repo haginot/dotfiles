@@ -160,6 +160,7 @@ cask "cursor"                # AI-powered editor
 cask "visual-studio-code"
 cask "macvim-app"
 cask "docker-desktop"
+cask "github"                    # GitHub Desktop
 cask "ghostty"               # Modern terminal
 cask "warp"                  # AI terminal (alternative)
 cask "orbstack"              # Fast Docker/Linux (alternative to Docker Desktop)
@@ -182,12 +183,14 @@ cask "keyboardcleantool"     # Keyboard cleaner
 cask "rectangle"             # Window manager (free)
 cask "1password"             # Password manager
 cask "notion"                # Notes & docs
+cask "notion-calendar"       # Calendar app
 cask "obsidian"              # Markdown notes
 
 # ------------------------------------------------------------------------------
 # Communication
 # ------------------------------------------------------------------------------
 cask "discord"
+cask "microsoft-teams"       # Microsoft Teams
 cask "zoom"
 
 # ------------------------------------------------------------------------------
@@ -203,6 +206,7 @@ cask "arc"                   # Modern browser
 cask "vlc"                   # Video player
 cask "spotify"               # Music
 cask "handbrake"             # Video converter
+cask "screen-studio"         # Professional screen recorder
 
 # ------------------------------------------------------------------------------
 # Documents & Office
@@ -269,6 +273,9 @@ mas "Amphetamine", id: 937984704
 mas "Magnet", id: 441258766
 mas "Hidden Bar", id: 1452453066
 mas "RunCat", id: 1429033973
+
+# Manual Install Required:
+# - Genspark Browser: https://www.genspark.ai/browser (AI agentic browser)
 
 # ==============================================================================
 # VS Code Extensions
