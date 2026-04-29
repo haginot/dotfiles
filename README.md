@@ -37,6 +37,8 @@
 dotfiles/
 ├── bin/                    # Custom scripts (added to PATH)
 │   ├── cleanup             # System cleanup utility
+│   ├── bt-aura-connect     # Connect HK Aura Studio 4
+│   ├── bt-aura-disconnect  # Disconnect HK Aura Studio 4
 │   ├── colors              # Terminal color palette
 │   ├── git-open            # Open repo in browser
 │   ├── sysinfo             # System information
@@ -116,6 +118,8 @@ exec zsh
 | Script | Description |
 |--------|-------------|
 | `cleanup` | Clean system caches and temporary files |
+| `bt-aura-connect [timeout]` | Connect HK Aura Studio 4 via Bluetooth |
+| `bt-aura-disconnect [timeout]` | Disconnect HK Aura Studio 4 via Bluetooth |
 | `sysinfo` | Display system information |
 | `colors` | Show terminal color palette |
 | `weather [city]` | Show weather information |

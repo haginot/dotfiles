@@ -1,0 +1,23 @@
+#!/bin/bash
+# Disconnect HK Aura Studio 4 via Bluetooth
+
+set -euo pipefail
+
+DEVICE_NAME="HK Aura Studio 4"
+TIMEOUT_SECONDS="${1:-12}"
+
+if ! command -v blueutil >/dev/null 2>&1; then
+    echo "blueutil is required. Install with: brew install blueutil"
+    exit 1
+fi
+
+echo "Disconnecting ${DEVICE_NAME}..."
+blueutil --disconnect "${DEVICE_NAME}"
+
+# Best-effort wait for stable disconnection.
+if blueutil --wait-disconnect "${DEVICE_NAME}" "${TIMEOUT_SECONDS}" >/dev/null 2>&1; then
+    echo "Disconnected: ${DEVICE_NAME}"
+else
+    echo "Disconnect requested, but timed out waiting for confirmation."
+    exit 1
+fi

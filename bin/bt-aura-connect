@@ -1,0 +1,26 @@
+#!/bin/bash
+# Connect HK Aura Studio 4 via Bluetooth
+
+set -euo pipefail
+
+DEVICE_NAME="HK Aura Studio 4"
+TIMEOUT_SECONDS="${1:-12}"
+
+if ! command -v blueutil >/dev/null 2>&1; then
+    echo "blueutil is required. Install with: brew install blueutil"
+    exit 1
+fi
+
+echo "Powering on Bluetooth..."
+blueutil --power 1
+
+echo "Connecting to ${DEVICE_NAME}..."
+blueutil --connect "${DEVICE_NAME}"
+
+# Best-effort wait for stable connection.
+if blueutil --wait-connect "${DEVICE_NAME}" "${TIMEOUT_SECONDS}" >/dev/null 2>&1; then
+    echo "Connected: ${DEVICE_NAME}"
+else
+    echo "Connection requested, but timed out waiting for confirmation."
+    exit 1
+fi
