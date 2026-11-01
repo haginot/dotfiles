@@ -27,8 +27,8 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # ==============================================================================
 echo "⚙️  Configuring General UI/UX..."
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
+# Disable the sound effects on boot (Apple Silicon)
+sudo nvram StartupMute=%01
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
@@ -338,55 +338,63 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # ==============================================================================
 echo "🌐 Configuring Safari..."
 
+# Safari is sandboxed; writes fail without Full Disk Access for the terminal.
+# Don't abort the whole script (set -e) if that happens.
+safari_write() { defaults write com.apple.Safari "$@" 2>/dev/null || SAFARI_WRITE_FAILED=1; }
+
 # Privacy: don't send search queries to Apple
-defaults write com.apple.Safari UniversalSearchEnabled -bool false
-defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+safari_write UniversalSearchEnabled -bool false
+safari_write SuppressSearchSuggestions -bool true
 
 # Press Tab to highlight each item on a web page
-defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+safari_write WebKitTabToLinksPreferenceKey -bool true
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
 
 # Show the full URL in the address bar
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+safari_write ShowFullURLInSmartSearchField -bool true
 
 # Set Safari's home page to `about:blank`
-defaults write com.apple.Safari HomePage -string "about:blank"
+safari_write HomePage -string "about:blank"
 
 # Prevent Safari from opening 'safe' files automatically
-defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+safari_write AutoOpenSafeDownloads -bool false
 
 # Hide Safari's bookmarks bar by default
-defaults write com.apple.Safari ShowFavoritesBar -bool false
+safari_write ShowFavoritesBar -bool false
 
 # Enable Safari's debug menu
-defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+safari_write IncludeInternalDebugMenu -bool true
 
 # Enable the Develop menu and the Web Inspector
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+safari_write IncludeDevelopMenu -bool true
+safari_write WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
 
 # Add a context menu item for showing the Web Inspector
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 
 # Enable continuous spellchecking
-defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+safari_write WebContinuousSpellCheckingEnabled -bool true
 
 # Disable auto-correct
-defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+safari_write WebAutomaticSpellingCorrectionEnabled -bool false
 
 # Warn about fraudulent websites
-defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+safari_write WarnAboutFraudulentWebsites -bool true
 
 # Block pop-up windows
-defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+safari_write WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 
 # Enable Do Not Track
-defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+safari_write SendDoNotTrackHTTPHeader -bool true
 
 # Update extensions automatically
-defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+safari_write InstallExtensionUpdatesAutomatically -bool true
+
+if [[ -n "${SAFARI_WRITE_FAILED:-}" ]]; then
+    echo "⚠️  Some Safari settings were skipped. Grant Full Disk Access to your terminal and re-run to apply them."
+fi
 
 # ==============================================================================
 # Terminal
@@ -489,10 +497,10 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 echo "💬 Configuring Messages..."
 
 # Disable smart quotes
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false 2>/dev/null || true
 
 # Disable continuous spell checking
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false 2>/dev/null || true
 
 # ==============================================================================
 # Energy Settings

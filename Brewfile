@@ -11,8 +11,7 @@
 # ------------------------------------------------------------------------------
 tap "dbt-labs/dbt-cli"
 tap "ekristen/tap"
-tap "homebrew/bundle"
-tap "homebrew/services"
+tap "hashicorp/tap"
 tap "jbangdev/tap"
 tap "rcmdnk/file"
 
@@ -80,7 +79,7 @@ brew "jbangdev/tap/jbang"
 # Cloud & Infrastructure
 # ------------------------------------------------------------------------------
 brew "awscli"
-brew "terraform"
+brew "hashicorp/tap/terraform"  # removed from homebrew-core (BSL)
 brew "railway"
 brew "render"
 brew "ekristen/tap/aws-nuke"
@@ -88,15 +87,15 @@ brew "ekristen/tap/aws-nuke"
 # ------------------------------------------------------------------------------
 # Database
 # ------------------------------------------------------------------------------
-brew "mysql@8.0"
-brew "postgresql@14", restart_service: :changed
+brew "mysql@8.4"
+brew "postgresql@17", restart_service: :changed
 
 # ------------------------------------------------------------------------------
 # AI & ML Tools
 # ------------------------------------------------------------------------------
 brew "claude-squad"              # Claude Code multi-instance manager
-brew "gemini-cli"                # Google Gemini CLI
 cask "codex"                     # OpenAI Codex CLI
+cask "claude-code"               # Claude Code CLI
 
 # ------------------------------------------------------------------------------
 # Data Processing & Media
@@ -198,14 +197,13 @@ cask "zoom"
 # ------------------------------------------------------------------------------
 cask "google-chrome"
 cask "firefox"
-cask "arc"                   # Modern browser
 
 # ------------------------------------------------------------------------------
 # Media
 # ------------------------------------------------------------------------------
 cask "vlc"                   # Video player
 cask "spotify"               # Music
-cask "handbrake"             # Video converter
+cask "handbrake-app"         # Video converter
 cask "screen-studio"         # Professional screen recorder
 
 # ------------------------------------------------------------------------------
