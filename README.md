@@ -196,17 +196,6 @@ gclone url      # Clone and cd into repo
 | `Ctrl+D` | Delete forward |
 | `Ctrl+K` | Kill to end of line |
 
-### Karabiner (JIS keyboard as US layout)
-
-The virtual keyboard is set to ANSI (`keyboard_type_v2: "ansi"`), so a JIS keyboard types US-layout characters by key position.
-
-| Key | Action |
-|-----|--------|
-| `Caps Lock` | Control |
-| `¥` | `` ` `` / `~` |
-| `_` | `\` / `\|` |
-| Left / Right `Cmd` (tap) | 英数 / かな |
-
 ## 🎨 Theming
 
 The setup uses **Catppuccin Mocha** theme across:
