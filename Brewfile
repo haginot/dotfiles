@@ -9,6 +9,7 @@
 # ------------------------------------------------------------------------------
 # Taps
 # ------------------------------------------------------------------------------
+# Homebrew 7+ refuses third-party tap formulae unless trusted; see `trusted: true` below.
 tap "dbt-labs/dbt-cli"
 tap "ekristen/tap"
 tap "hashicorp/tap"
@@ -73,16 +74,16 @@ brew "yarn"
 brew "uv"                    # Fast Python package manager
 brew "poetry"                # Python dependency management
 brew "openjdk"
-brew "jbangdev/tap/jbang"
+brew "jbangdev/tap/jbang", trusted: true
 
 # ------------------------------------------------------------------------------
 # Cloud & Infrastructure
 # ------------------------------------------------------------------------------
 brew "awscli"
-brew "hashicorp/tap/terraform"  # removed from homebrew-core (BSL)
+brew "hashicorp/tap/terraform", trusted: true  # removed from homebrew-core (BSL)
 brew "railway"
 brew "render"
-brew "ekristen/tap/aws-nuke"
+brew "ekristen/tap/aws-nuke", trusted: true
 
 # ------------------------------------------------------------------------------
 # Database
@@ -145,8 +146,8 @@ brew "libomp"
 brew "tcl-tk"
 brew "xz"
 brew "harfbuzz"
-brew "dbt-labs/dbt-cli/dbt"
-brew "rcmdnk/file/brew-file"
+brew "dbt-labs/dbt-cli/dbt", trusted: true
+brew "rcmdnk/file/brew-file", trusted: true
 
 # ==============================================================================
 # Applications (Casks)
@@ -279,8 +280,6 @@ mas "RunCat", id: 1429033973
 # VS Code Extensions
 # ==============================================================================
 vscode "ms-vsliveshare.vsliveshare"
-vscode "github.copilot"
-vscode "github.copilot-chat"
 vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
 vscode "dbaeumer.vscode-eslint"
