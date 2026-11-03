@@ -108,6 +108,35 @@ text = ensure_field(text, "use_japanese_layout", "false")
 # Space inserts half-width; Shift+Space inserts full-width (keymap: InsertAlternateSpace)
 text = ensure_field(text, "space_character_form", "FUNDAMENTAL_HALF_WIDTH")
 
+# Character width per group (Mozc defaults, except digits: always half-width)
+FULL, HALF, LAST = "FULL_WIDTH", "HALF_WIDTH", "LAST_FORM"
+CHARACTER_FORM_RULES = [
+    ("ア", FULL, FULL),
+    ("A", FULL, LAST),
+    ("0", HALF, HALF),
+    ("(){}[]", FULL, LAST),
+    (".,", FULL, LAST),
+    ("。、", FULL, FULL),
+    ("・「」", FULL, FULL),
+    ("\"'", FULL, LAST),
+    (":;", FULL, LAST),
+    ("#%&@$^_|`\\", FULL, LAST),
+    ("~", FULL, LAST),
+    ("<>=+-/*", FULL, LAST),
+    ("?!", FULL, LAST),
+]
+
+def quote(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+rules_text = "".join(
+    f"character_form_rules {{\n  group: {quote(group)}\n"
+    f"  preedit_character_form: {preedit}\n  conversion_character_form: {conversion}\n}}\n"
+    for group, preedit, conversion in CHARACTER_FORM_RULES
+)
+text = re.sub(r"^character_form_rules \{\n.*?^\}\n", "", text, flags=re.MULTILINE | re.DOTALL)
+text = text.rstrip("\n") + "\n" + rules_text
+
 if text != original:
     text_path.write_text(text)
     raise SystemExit(0)
@@ -115,11 +144,14 @@ raise SystemExit(2)
 PY
   then
     protoc -I "${TMP_DIR}" --encode mozc.config.Config config.proto < "${TMP_DIR}/config.textproto" > "${TMP_DIR}/config.bin"
-    if [ -f "$GOOGLE_CONFIG" ]; then
-      cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
+    # protoc encodes in field order, so identical bytes mean nothing changed
+    if ! cmp -s "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"; then
+      if [ -f "$GOOGLE_CONFIG" ]; then
+        cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
+      fi
+      mv "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"
+      google_changed=1
     fi
-    mv "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"
-    google_changed=1
   else
     rc=$?
     if [ "$rc" -ne 2 ]; then
