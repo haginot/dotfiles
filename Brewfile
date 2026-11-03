@@ -278,6 +278,7 @@ mas "RunCat", id: 1429033973
 # Manual Install Required:
 # - Genspark Browser: https://www.genspark.ai/browser (AI agentic browser)
 # - Muse: https://muse.ai/ (Meta AI assistant; download the .dmg and drag to /Applications; Homebrew cask disabled 2026-10, signed download URL)
+# - Genspark Super App (GenMail): https://www.genspark.ai/genmail (AI mail & calendar; download the .dmg and drag to /Applications)
 
 # ==============================================================================
 # VS Code Extensions

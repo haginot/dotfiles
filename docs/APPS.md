@@ -208,6 +208,7 @@ Raycast:
 | **ChatGPT** | OpenAI公式デスクトップアプリ | ショートカットからすぐ呼び出せる汎用AIアシスタント |
 | **Grok Bot** | xAIのAIアシスタント | アプリ横断で動くAIチームメイト |
 | **Muse** | MetaのAIアシスタント（手動インストール） | タスク・プロジェクト・長期目標の管理。Homebrew caskが無効化されたため公式サイトから入手 |
+| **GenMail** | GensparkのAIメール・カレンダー（手動インストール） | 受信トレイの自動仕分け、自分の文体での返信下書き。Genspark Super Appに同梱 |
 
 > Claude（デスクトップ版）は公式サイトから手動インストールしています。CLIは `claude-code` caskで入ります。
 
