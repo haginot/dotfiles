@@ -112,6 +112,7 @@ brew "poppler"               # PDF tools
 brew "tesseract"
 brew "tesseract-lang"
 brew "nkf"                   # Japanese text encoding
+brew "protobuf"              # protoc (used to edit Google Japanese IME config)
 
 # ------------------------------------------------------------------------------
 # Development Tools

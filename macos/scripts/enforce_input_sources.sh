@@ -73,12 +73,17 @@ PY
   fi
 fi
 
-if [ -f "$GOOGLE_CONFIG" ] && command -v protoc >/dev/null 2>&1; then
+if [ -d "$(dirname "$GOOGLE_CONFIG")" ] && command -v protoc >/dev/null 2>&1; then
   TMP_DIR="$(mktemp -d)"
   trap 'rm -rf "$TMP_DIR"' EXIT
 
   cp "$PROTO_FILE" "${TMP_DIR}/config.proto"
-  protoc -I "${TMP_DIR}" --decode mozc.config.Config config.proto < "$GOOGLE_CONFIG" > "${TMP_DIR}/config.textproto"
+  # config1.db only exists after the preferences were changed once; start from defaults otherwise
+  if [ -f "$GOOGLE_CONFIG" ]; then
+    protoc -I "${TMP_DIR}" --decode mozc.config.Config config.proto < "$GOOGLE_CONFIG" > "${TMP_DIR}/config.textproto"
+  else
+    : > "${TMP_DIR}/config.textproto"
+  fi
 
   if TEXT_PROTO="${TMP_DIR}/config.textproto" python3 <<'PY'
 import os
@@ -100,6 +105,8 @@ text = ensure_field(text, "auto_switch_composition_mode", "false")
 text = ensure_field(text, "preedit_method", "ROMAN")
 text = ensure_field(text, "use_keyboard_to_change_preedit_method", "true")
 text = ensure_field(text, "use_japanese_layout", "false")
+# Space inserts half-width; Shift+Space inserts full-width (keymap: InsertAlternateSpace)
+text = ensure_field(text, "space_character_form", "FUNDAMENTAL_HALF_WIDTH")
 
 if text != original:
     text_path.write_text(text)
@@ -108,7 +115,9 @@ raise SystemExit(2)
 PY
   then
     protoc -I "${TMP_DIR}" --encode mozc.config.Config config.proto < "${TMP_DIR}/config.textproto" > "${TMP_DIR}/config.bin"
-    cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
+    if [ -f "$GOOGLE_CONFIG" ]; then
+      cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
+    fi
     mv "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"
     google_changed=1
   else
@@ -125,4 +134,5 @@ fi
 
 if [ "$google_changed" -eq 1 ]; then
   killall GoogleJapaneseInput >/dev/null 2>&1 || true
+  killall GoogleJapaneseInputConverter >/dev/null 2>&1 || true
 fi
