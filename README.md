@@ -204,6 +204,7 @@ The virtual keyboard is set to ANSI (`keyboard_type_v2: "ansi"`), so a JIS keybo
 |-----|--------|
 | `Caps Lock` (bottom left) | `fn` |
 | `fn` (bottom right) | `Option` |
+| `Option+Tab` / `Option+Shift+Tab` | Next / previous window in the app (`Cmd+` `` ` ``) |
 | `¥` | `` ` `` / `~` |
 | `_` | `\` / `\|` |
 | Left / Right `Cmd` (tap) | 英数 / かな |
