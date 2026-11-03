@@ -202,7 +202,8 @@ The virtual keyboard is set to ANSI (`keyboard_type_v2: "ansi"`), so a JIS keybo
 
 | Key | Action |
 |-----|--------|
-| `Caps Lock` | Control |
+| `Caps Lock` (bottom left) | `fn` |
+| `fn` (bottom right) | `Option` |
 | `¥` | `` ` `` / `~` |
 | `_` | `\` / `\|` |
 | Left / Right `Cmd` (tap) | 英数 / かな |
