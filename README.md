@@ -206,6 +206,7 @@ The virtual keyboard is set to ANSI (`keyboard_type_v2: "ansi"`), so a JIS keybo
 | `¥` | `` ` `` / `~` |
 | `_` | `\` / `\|` |
 | Left / Right `Cmd` (tap) | 英数 / かな |
+| `英数` / `かな` | Tap: 英数 / かな, hold with another key: Left / Right `Cmd` |
 
 ## 🎨 Theming
 
