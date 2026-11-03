@@ -214,9 +214,8 @@ setup_symlinks() {
     mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
     link_file "$DOTFILES/config/ghostty/config" "$HOME/Library/Application Support/com.mitchellh.ghostty/config"
 
-    # Karabiner
-    mkdir -p "$XDG_CONFIG_HOME/karabiner"
-    link_file "$DOTFILES/config/karabiner/karabiner.json" "$XDG_CONFIG_HOME/karabiner/karabiner.json"
+    # Karabiner (link the directory: Karabiner replaces a symlinked file on save)
+    link_file "$DOTFILES/config/karabiner" "$XDG_CONFIG_HOME/karabiner"
 
     # -------------------------------------------------------------------------
     # AI Development Tools
