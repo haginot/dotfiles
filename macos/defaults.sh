@@ -557,6 +557,10 @@ echo "📶 Configuring Bluetooth..."
 # Increase sound quality for Bluetooth headphones/headsets
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
+# Allow Handoff (required for Universal Clipboard with iPhone/iPad)
+defaults -currentHost write com.apple.coreservices.useractivityd ActivityAdvertisingAllowed -bool true
+defaults -currentHost write com.apple.coreservices.useractivityd ActivityReceivingAllowed -bool true
+
 # ==============================================================================
 # Kill Affected Applications
 # ==============================================================================
