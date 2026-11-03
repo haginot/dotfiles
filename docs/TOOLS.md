@@ -200,8 +200,8 @@ uv:
 
 | Tool | 説明 | 選定理由 |
 |------|------|----------|
-| `mysql@8.0` | MySQL | 最も普及したRDBMS |
-| `postgresql@14` | PostgreSQL | 高度な機能を持つオープンソースRDBMS |
+| `mysql@8.4` | MySQL | 最も普及したRDBMS |
+| `postgresql@17` | PostgreSQL | 高度な機能を持つオープンソースRDBMS |
 
 ---
 
@@ -210,7 +210,7 @@ uv:
 | Tool | 説明 | 選定理由 |
 |------|------|----------|
 | `claude-squad` | Claude管理ツール | 複数Claude Codeインスタンスの管理 |
-| `gemini-cli` | Gemini CLI | Google AIとのターミナル対話 |
+| `@google/gemini-cli` (mise npm) | Gemini CLI | Google AIとのターミナル対話 |
 
 ---
 

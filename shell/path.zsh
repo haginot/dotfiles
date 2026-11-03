@@ -34,9 +34,9 @@ path_prepend "$HOMEBREW_PREFIX/bin"
 path_prepend "$HOMEBREW_PREFIX/sbin"
 
 # Language-specific paths
-path_prepend "$HOMEBREW_PREFIX/opt/mysql@8.0/bin"
+path_prepend "$HOMEBREW_PREFIX/opt/mysql@8.4/bin"
 path_prepend "$HOMEBREW_PREFIX/opt/openjdk/bin"
-path_prepend "$HOMEBREW_PREFIX/opt/postgresql@14/bin"
+path_prepend "$HOMEBREW_PREFIX/opt/postgresql@17/bin"
 
 # Runtime managers
 path_prepend "$CARGO_HOME/bin"

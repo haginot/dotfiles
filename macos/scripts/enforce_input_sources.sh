@@ -73,12 +73,17 @@ PY
   fi
 fi
 
-if [ -f "$GOOGLE_CONFIG" ] && command -v protoc >/dev/null 2>&1; then
+if [ -d "$(dirname "$GOOGLE_CONFIG")" ] && command -v protoc >/dev/null 2>&1; then
   TMP_DIR="$(mktemp -d)"
   trap 'rm -rf "$TMP_DIR"' EXIT
 
   cp "$PROTO_FILE" "${TMP_DIR}/config.proto"
-  protoc -I "${TMP_DIR}" --decode mozc.config.Config config.proto < "$GOOGLE_CONFIG" > "${TMP_DIR}/config.textproto"
+  # config1.db only exists after the preferences were changed once; start from defaults otherwise
+  if [ -f "$GOOGLE_CONFIG" ]; then
+    protoc -I "${TMP_DIR}" --decode mozc.config.Config config.proto < "$GOOGLE_CONFIG" > "${TMP_DIR}/config.textproto"
+  else
+    : > "${TMP_DIR}/config.textproto"
+  fi
 
   if TEXT_PROTO="${TMP_DIR}/config.textproto" python3 <<'PY'
 import os
@@ -100,6 +105,37 @@ text = ensure_field(text, "auto_switch_composition_mode", "false")
 text = ensure_field(text, "preedit_method", "ROMAN")
 text = ensure_field(text, "use_keyboard_to_change_preedit_method", "true")
 text = ensure_field(text, "use_japanese_layout", "false")
+# Space inserts half-width; Shift+Space inserts full-width (keymap: InsertAlternateSpace)
+text = ensure_field(text, "space_character_form", "FUNDAMENTAL_HALF_WIDTH")
+
+# Character width per group (Mozc defaults, except digits: always half-width)
+FULL, HALF, LAST = "FULL_WIDTH", "HALF_WIDTH", "LAST_FORM"
+CHARACTER_FORM_RULES = [
+    ("ア", FULL, FULL),
+    ("A", FULL, LAST),
+    ("0", HALF, HALF),
+    ("(){}[]", FULL, LAST),
+    (".,", FULL, LAST),
+    ("。、", FULL, FULL),
+    ("・「」", FULL, FULL),
+    ("\"'", FULL, LAST),
+    (":;", FULL, LAST),
+    ("#%&@$^_|`\\", FULL, LAST),
+    ("~", FULL, LAST),
+    ("<>=+-/*", FULL, LAST),
+    ("?!", FULL, LAST),
+]
+
+def quote(value: str) -> str:
+    return '"' + value.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+rules_text = "".join(
+    f"character_form_rules {{\n  group: {quote(group)}\n"
+    f"  preedit_character_form: {preedit}\n  conversion_character_form: {conversion}\n}}\n"
+    for group, preedit, conversion in CHARACTER_FORM_RULES
+)
+text = re.sub(r"^character_form_rules \{\n.*?^\}\n", "", text, flags=re.MULTILINE | re.DOTALL)
+text = text.rstrip("\n") + "\n" + rules_text
 
 if text != original:
     text_path.write_text(text)
@@ -108,9 +144,14 @@ raise SystemExit(2)
 PY
   then
     protoc -I "${TMP_DIR}" --encode mozc.config.Config config.proto < "${TMP_DIR}/config.textproto" > "${TMP_DIR}/config.bin"
-    cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
-    mv "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"
-    google_changed=1
+    # protoc encodes in field order, so identical bytes mean nothing changed
+    if ! cmp -s "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"; then
+      if [ -f "$GOOGLE_CONFIG" ]; then
+        cp "$GOOGLE_CONFIG" "${GOOGLE_CONFIG}.$(date +%Y%m%d%H%M%S).bak"
+      fi
+      mv "${TMP_DIR}/config.bin" "$GOOGLE_CONFIG"
+      google_changed=1
+    fi
   else
     rc=$?
     if [ "$rc" -ne 2 ]; then
@@ -125,4 +166,5 @@ fi
 
 if [ "$google_changed" -eq 1 ]; then
   killall GoogleJapaneseInput >/dev/null 2>&1 || true
+  killall GoogleJapaneseInputConverter >/dev/null 2>&1 || true
 fi

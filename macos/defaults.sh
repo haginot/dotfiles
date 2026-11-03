@@ -27,8 +27,8 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 # ==============================================================================
 echo "⚙️  Configuring General UI/UX..."
 
-# Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
+# Disable the sound effects on boot (Apple Silicon)
+sudo nvram StartupMute=%01
 
 # Set sidebar icon size to medium
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
@@ -88,9 +88,19 @@ defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-# Enable three-finger drag
-defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
-defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+# Enable three-finger drag (and move 3-finger swipes to 4 fingers, as System Settings does)
+for domain in com.apple.AppleMultitouchTrackpad com.apple.driver.AppleBluetoothMultitouch.trackpad; do
+    defaults write "$domain" TrackpadThreeFingerDrag -bool true
+    defaults write "$domain" TrackpadThreeFingerHorizSwipeGesture -int 0
+    defaults write "$domain" TrackpadThreeFingerVertSwipeGesture -int 0
+    defaults write "$domain" TrackpadFourFingerHorizSwipeGesture -int 2
+    defaults write "$domain" TrackpadFourFingerVertSwipeGesture -int 2
+done
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerDragGesture -bool true
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerHorizSwipeGesture -int 0
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerVertSwipeGesture -int 0
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.fourFingerHorizSwipeGesture -int 2
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.fourFingerVertSwipeGesture -int 2
 
 # Enable natural scrolling
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool true
@@ -107,16 +117,7 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightC
 # ==============================================================================
 echo "⌨️  Configuring Keyboard..."
 
-# Remap Caps Lock to Control
-# Key codes: 0x700000039 = Caps Lock, 0x7000000E0 = Left Control
-hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}' > /dev/null
-
-# Install LaunchAgent for persistent key remapping across reboots
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p ~/Library/LaunchAgents
-cp "${SCRIPT_DIR}/LaunchAgents/com.local.KeyRemapping.plist" ~/Library/LaunchAgents/
-launchctl unload ~/Library/LaunchAgents/com.local.KeyRemapping.plist 2>/dev/null || true
-launchctl load ~/Library/LaunchAgents/com.local.KeyRemapping.plist
+# Key remapping (Caps Lock → fn, etc.) is handled by Karabiner-Elements
 
 # Enable full keyboard access for all controls
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
@@ -147,12 +148,12 @@ else:
 
 symbolic_hotkeys = data.setdefault("AppleSymbolicHotKeys", {})
 
-# Move focus to next window (Command + backtick)
+# Move focus to next window (Command + backtick, ANSI key code 50)
 symbolic_hotkeys["27"] = {
     "enabled": True,
     "value": {
         "type": "standard",
-        "parameters": [64, 33, 1048576],
+        "parameters": [96, 50, 1048576],
     },
 }
 
@@ -161,7 +162,7 @@ symbolic_hotkeys["51"] = {
     "enabled": True,
     "value": {
         "type": "standard",
-        "parameters": [64, 33, 1572864],
+        "parameters": [96, 50, 1179648],
     },
 }
 
@@ -338,55 +339,63 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # ==============================================================================
 echo "🌐 Configuring Safari..."
 
+# Safari is sandboxed; writes fail without Full Disk Access for the terminal.
+# Don't abort the whole script (set -e) if that happens.
+safari_write() { defaults write com.apple.Safari "$@" 2>/dev/null || SAFARI_WRITE_FAILED=1; }
+
 # Privacy: don't send search queries to Apple
-defaults write com.apple.Safari UniversalSearchEnabled -bool false
-defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+safari_write UniversalSearchEnabled -bool false
+safari_write SuppressSearchSuggestions -bool true
 
 # Press Tab to highlight each item on a web page
-defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+safari_write WebKitTabToLinksPreferenceKey -bool true
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
 
 # Show the full URL in the address bar
-defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+safari_write ShowFullURLInSmartSearchField -bool true
 
 # Set Safari's home page to `about:blank`
-defaults write com.apple.Safari HomePage -string "about:blank"
+safari_write HomePage -string "about:blank"
 
 # Prevent Safari from opening 'safe' files automatically
-defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+safari_write AutoOpenSafeDownloads -bool false
 
 # Hide Safari's bookmarks bar by default
-defaults write com.apple.Safari ShowFavoritesBar -bool false
+safari_write ShowFavoritesBar -bool false
 
 # Enable Safari's debug menu
-defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+safari_write IncludeInternalDebugMenu -bool true
 
 # Enable the Develop menu and the Web Inspector
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+safari_write IncludeDevelopMenu -bool true
+safari_write WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
 
 # Add a context menu item for showing the Web Inspector
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 
 # Enable continuous spellchecking
-defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+safari_write WebContinuousSpellCheckingEnabled -bool true
 
 # Disable auto-correct
-defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+safari_write WebAutomaticSpellingCorrectionEnabled -bool false
 
 # Warn about fraudulent websites
-defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+safari_write WarnAboutFraudulentWebsites -bool true
 
 # Block pop-up windows
-defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+safari_write WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+safari_write com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
 
 # Enable Do Not Track
-defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+safari_write SendDoNotTrackHTTPHeader -bool true
 
 # Update extensions automatically
-defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+safari_write InstallExtensionUpdatesAutomatically -bool true
+
+if [[ -n "${SAFARI_WRITE_FAILED:-}" ]]; then
+    echo "⚠️  Some Safari settings were skipped. Grant Full Disk Access to your terminal and re-run to apply them."
+fi
 
 # ==============================================================================
 # Terminal
@@ -489,10 +498,10 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 echo "💬 Configuring Messages..."
 
 # Disable smart quotes
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false 2>/dev/null || true
 
 # Disable continuous spell checking
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false 2>/dev/null || true
 
 # ==============================================================================
 # Energy Settings
@@ -539,11 +548,18 @@ echo "📶 Configuring Bluetooth..."
 # Increase sound quality for Bluetooth headphones/headsets
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
+# Allow Handoff (required for Universal Clipboard with iPhone/iPad)
+defaults -currentHost write com.apple.coreservices.useractivityd ActivityAdvertisingAllowed -bool true
+defaults -currentHost write com.apple.coreservices.useractivityd ActivityReceivingAllowed -bool true
+
 # ==============================================================================
 # Kill Affected Applications
 # ==============================================================================
 echo ""
 echo "🔄 Restarting affected applications..."
+
+# Apply trackpad/keyboard preferences without logging out
+/System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
 
 for app in "Activity Monitor" \
     "cfprefsd" \

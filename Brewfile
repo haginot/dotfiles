@@ -9,10 +9,10 @@
 # ------------------------------------------------------------------------------
 # Taps
 # ------------------------------------------------------------------------------
+# Homebrew 7+ refuses third-party tap formulae unless trusted; see `trusted: true` below.
 tap "dbt-labs/dbt-cli"
 tap "ekristen/tap"
-tap "homebrew/bundle"
-tap "homebrew/services"
+tap "hashicorp/tap"
 tap "jbangdev/tap"
 tap "rcmdnk/file"
 
@@ -74,29 +74,31 @@ brew "yarn"
 brew "uv"                    # Fast Python package manager
 brew "poetry"                # Python dependency management
 brew "openjdk"
-brew "jbangdev/tap/jbang"
+brew "jbangdev/tap/jbang", trusted: true
 
 # ------------------------------------------------------------------------------
 # Cloud & Infrastructure
 # ------------------------------------------------------------------------------
 brew "awscli"
-brew "terraform"
+brew "hashicorp/tap/terraform", trusted: true  # removed from homebrew-core (BSL)
 brew "railway"
 brew "render"
-brew "ekristen/tap/aws-nuke"
+brew "ekristen/tap/aws-nuke", trusted: true
 
 # ------------------------------------------------------------------------------
 # Database
 # ------------------------------------------------------------------------------
-brew "mysql@8.0"
-brew "postgresql@14", restart_service: :changed
+brew "mysql@8.4"
+brew "postgresql@17", restart_service: :changed
 
 # ------------------------------------------------------------------------------
 # AI & ML Tools
 # ------------------------------------------------------------------------------
 brew "claude-squad"              # Claude Code multi-instance manager
-brew "gemini-cli"                # Google Gemini CLI
 cask "codex"                     # OpenAI Codex CLI
+cask "claude-code"               # Claude Code CLI
+cask "chatgpt"                   # OpenAI ChatGPT desktop app
+cask "grok-bot"                  # xAI Grok Bot
 
 # ------------------------------------------------------------------------------
 # Data Processing & Media
@@ -110,6 +112,7 @@ brew "poppler"               # PDF tools
 brew "tesseract"
 brew "tesseract-lang"
 brew "nkf"                   # Japanese text encoding
+brew "protobuf"              # protoc (used to edit Google Japanese IME config)
 
 # ------------------------------------------------------------------------------
 # Development Tools
@@ -146,8 +149,8 @@ brew "libomp"
 brew "tcl-tk"
 brew "xz"
 brew "harfbuzz"
-brew "dbt-labs/dbt-cli/dbt"
-brew "rcmdnk/file/brew-file"
+brew "dbt-labs/dbt-cli/dbt", trusted: true
+brew "rcmdnk/file/brew-file", trusted: true
 
 # ==============================================================================
 # Applications (Casks)
@@ -198,14 +201,13 @@ cask "zoom"
 # ------------------------------------------------------------------------------
 cask "google-chrome"
 cask "firefox"
-cask "arc"                   # Modern browser
 
 # ------------------------------------------------------------------------------
 # Media
 # ------------------------------------------------------------------------------
 cask "vlc"                   # Video player
 cask "spotify"               # Music
-cask "handbrake"             # Video converter
+cask "handbrake-app"         # Video converter
 cask "screen-studio"         # Professional screen recorder
 
 # ------------------------------------------------------------------------------
@@ -276,13 +278,13 @@ mas "RunCat", id: 1429033973
 
 # Manual Install Required:
 # - Genspark Browser: https://www.genspark.ai/browser (AI agentic browser)
+# - Muse: https://muse.ai/ (Meta AI assistant; download the .dmg and drag to /Applications; Homebrew cask disabled 2026-10, signed download URL)
+# - Genspark Super App (GenMail): https://www.genspark.ai/genmail (AI mail & calendar; download the .dmg and drag to /Applications)
 
 # ==============================================================================
 # VS Code Extensions
 # ==============================================================================
 vscode "ms-vsliveshare.vsliveshare"
-vscode "github.copilot"
-vscode "github.copilot-chat"
 vscode "ms-python.python"
 vscode "ms-python.vscode-pylance"
 vscode "dbaeumer.vscode-eslint"

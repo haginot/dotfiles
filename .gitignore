@@ -33,3 +33,6 @@ credentials.json
 .worktrees/
 .security-key
 logs/security/
+
+# Karabiner runtime files (config dir is symlinked)
+config/karabiner/automatic_backups/
