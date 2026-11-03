@@ -117,16 +117,7 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightC
 # ==============================================================================
 echo "⌨️  Configuring Keyboard..."
 
-# Remap Caps Lock to Control
-# Key codes: 0x700000039 = Caps Lock, 0x7000000E0 = Left Control
-hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000E0}]}' > /dev/null
-
-# Install LaunchAgent for persistent key remapping across reboots
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p ~/Library/LaunchAgents
-cp "${SCRIPT_DIR}/LaunchAgents/com.local.KeyRemapping.plist" ~/Library/LaunchAgents/
-launchctl unload ~/Library/LaunchAgents/com.local.KeyRemapping.plist 2>/dev/null || true
-launchctl load ~/Library/LaunchAgents/com.local.KeyRemapping.plist
+# Key remapping (Caps Lock → fn, etc.) is handled by Karabiner-Elements
 
 # Enable full keyboard access for all controls
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
@@ -157,12 +148,12 @@ else:
 
 symbolic_hotkeys = data.setdefault("AppleSymbolicHotKeys", {})
 
-# Move focus to next window (Command + backtick)
+# Move focus to next window (Command + backtick, ANSI key code 50)
 symbolic_hotkeys["27"] = {
     "enabled": True,
     "value": {
         "type": "standard",
-        "parameters": [64, 33, 1048576],
+        "parameters": [96, 50, 1048576],
     },
 }
 
@@ -171,7 +162,7 @@ symbolic_hotkeys["51"] = {
     "enabled": True,
     "value": {
         "type": "standard",
-        "parameters": [64, 33, 1572864],
+        "parameters": [96, 50, 1179648],
     },
 }
 
